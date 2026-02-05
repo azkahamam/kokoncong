@@ -5,20 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi Bintang Salsa</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        /* Style yang sama dengan sebelumnya agar bagus di HP */
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #f0f2f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        nav { background: #fff; padding: 15px; display: flex; justify-content: center; gap: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        nav a { text-decoration: none; color: #555; font-size: 14px; }
-        .container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 400px; text-align: center; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; }
-        button { background: #007bff; color: #fff; border: none; font-weight: 600; cursor: pointer; }
-    </style>
     <script src="config.js"></script>
     <script>cekLogin();</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav>
@@ -51,20 +40,25 @@
             btn.disabled = true;
             btn.innerText = 'Mengirim...';
 
-            const { error } = await supabase.from('absensi').insert([
-                { 
-                    nama: document.getElementById('nama').value, 
-                    keterangan: document.getElementById('keterangan').value 
-                }
-            ]);
+            try {
+                const { error } = await supabase.from('absensi').insert([
+                    { 
+                        nama: document.getElementById('nama').value, 
+                        keterangan: document.getElementById('keterangan').value 
+                    }
+                ]);
 
-            if (error) alert('Error: ' + error.message);
-            else {
+                if (error) throw error;
+
                 document.getElementById('msg').innerHTML = "<p style='color:green;'>✅ Berhasil dicatat!</p>";
                 document.getElementById('absenForm').reset();
+            } catch (err) {
+                alert('Gagal mengirim: ' + err.message);
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Kirim Absensi';
             }
-            btn.disabled = false;
-            btn.innerText = 'Kirim Absensi';
         };
 
         function logout() {
